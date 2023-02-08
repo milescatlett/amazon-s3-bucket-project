@@ -1,5 +1,13 @@
+"""
+Author: Miles Catlett
+Date: 12/22/22
+This showcases my ability to connect to an Amazon bucket using python and flask. I used code and comments
+that I found on the Amazon website.
+"""
 import boto3
+# To be able to read the csv document that I'm using to store table headers
 import pandas
+# To parse an xml document stored in the bucket
 from bs4 import BeautifulSoup
 import cr
 
@@ -39,15 +47,21 @@ obj = client.get_object(
     Bucket=bucket,
     Key=key
 )
-pd_data = pandas.read_csv('qai_headers.csv')
+# Create a list of headers
+pd_data = pandas.read_csv('headers.csv')
 headers = pd_data['Header'].tolist()
+# Get the XML file and it's contents
 file = obj['Body']
 contents = ''
 for item in file:
+    # Add body items to a string after decoding them
     contents += item.decode()
+# Use beautiful soup to parse the string we have created
 soup = BeautifulSoup(contents, 'xml')
+# find the specific keys we are looking for
 answers = soup.find_all('answer')
 count = 0
+# Loop through all keys and match labels against the headers
 for answer in answers:
     count += 1
     label = answer.get('label')
